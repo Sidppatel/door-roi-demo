@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DoorROI — See the ROI on Every Door</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    :root {
+      --color-bg: #f9fafb;
+      --color-bg-gradient-1: #e5e7eb;
+      --color-bg-gradient-2: #f9fafb;
+      --color-bg-gradient-3: #f3f4f6;
+      --color-surface: #ffffff;
+      --color-navy: #0b1220;
+      --color-navy-soft: #111827;
+      --color-gold: #d4a017;
+      --color-muted: #6b7280;
+      --color-border: #e5e7eb;
+      --color-danger: #b91c1c;
+      --color-accent: #1D9E75;
+      --color-table-even: #f9fafb;
+      --color-table-odd: #ffffff;
+      --color-table-head: #f3f4f6;
+      --color-dashboard-bg: rgba(255, 255, 255, 0.8);
+      --color-dashboard-border: rgba(148, 163, 184, 0.25);
+      --color-pill-bg: rgba(11, 18, 32, 0.04);
+      --color-pill-border: rgba(148, 163, 184, 0.35);
+      --color-badge-bg: rgba(17, 24, 39, 0.05);
+      --color-badge-border: rgba(17, 24, 39, 0.12);
+      --color-action-bg: #f9fafb;
+      --color-chart-grid: rgba(0, 0, 0, 0.06);
+      --color-chart-text: #6b7280;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --shadow-subtle: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #0f1117;
+      --color-bg-gradient-1: #1a1d27;
+      --color-bg-gradient-2: #0f1117;
+      --color-bg-gradient-3: #141722;
+      --color-surface: #1a1d27;
+      --color-navy: #f1f5f9;
+      --color-navy-soft: #e2e8f0;
+      --color-muted: #9ca3af;
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-danger: #ef4444;
+      --color-table-even: #1a1d27;
+      --color-table-odd: #141722;
+      --color-table-head: #1e2130;
+      --color-dashboard-bg: rgba(26, 29, 39, 0.9);
+      --color-dashboard-border: rgba(255, 255, 255, 0.08);
+      --color-pill-bg: rgba(255, 255, 255, 0.05);
+      --color-pill-border: rgba(255, 255, 255, 0.1);
+      --color-badge-bg: rgba(255, 255, 255, 0.06);
+      --color-badge-border: rgba(255, 255, 255, 0.1);
+      --color-action-bg: #141722;
+      --color-chart-grid: rgba(255, 255, 255, 0.06);
+      --color-chart-text: #9ca3af;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.4);
+      --shadow-subtle: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, var(--color-bg-gradient-1) 0, var(--color-bg-gradient-2) 40%, var(--color-bg-gradient-3) 100%);
+      color: var(--color-navy-soft);
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body { min-height: 100vh; }
+
+    .page {
+      margin: 0 auto;
+      padding: 24px 48px 40px;
+    }
+
+    /* Dark mode toggle */
+    .theme-toggle {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--color-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .theme-toggle:hover {
+      color: var(--color-navy);
+      border-color: var(--color-gold);
+    }
+    .theme-toggle-icon { font-size: 1rem; }
+
+    /* Nav - full width edge-to-edge */
+    .nav-outer {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--color-dashboard-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px 48px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 42px;
+      border-radius: 8px;
+      border: 2px solid var(--color-gold);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(11, 18, 32, 0.15);
+      background: linear-gradient(145deg, #111827, #020617);
+    }
+
+    .brand-icon::before {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--color-gold);
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .brand-text-main {
+      font-family: "Playfair Display", "Times New Roman", serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--color-navy);
+      transition: color 0.3s;
+    }
+
+    .brand-text-main span {
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      font-size: 1.1rem;
+      margin-left: 4px;
+      color: var(--color-gold);
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-link {
+      font-size: 0.82rem;
+      color: var(--color-muted);
+      text-decoration: none;
+      opacity: 0.75;
+      transition: color 0.3s, opacity 0.3s;
+    }
+    .nav-link:hover { color: var(--color-navy); opacity: 1; }
+
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 18px;
+      background: var(--color-gold);
+      color: #111827;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(212, 160, 23, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      box-shadow: none;
+      background: var(--color-gold);
+      filter: brightness(0.95);
+    }
+    .btn-sm:hover { filter: brightness(1.02); }
+
+    .cta-secondary {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--color-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .cta-secondary:hover { color: var(--color-gold); }
+    .cta-secondary span { text-decoration: underline; }
+
+    /* Hero */
+    .hero {
+      margin-bottom: 36px;
+      text-align: center;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-main-title {
+      font-family: "Playfair Display", serif;
+      font-size: 2.4rem;
+      line-height: 1.1;
+      color: var(--color-navy);
+      margin: 0 0 12px;
+      transition: color 0.3s;
+    }
+    .hero-highlight { color: var(--color-gold); }
+
+    .hero-subtitle {
+      margin: 0 auto 18px;
+      max-width: 520px;
+      font-size: 0.98rem;
+      color: var(--color-muted);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      transition: color 0.3s;
+    }
+
+    .hero-footnote {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      margin-top: 14px;
+      transition: color 0.3s;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--color-pill-bg);
+      border: 1px solid var(--color-pill-border);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      margin-bottom: 10px;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .hero-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+    }
+
+    /* Dashboard card */
+    .dashboard-wrapper {
+      background: var(--color-dashboard-bg);
+      border-radius: var(--radius-lg);
+      padding: 22px 22px 24px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--color-dashboard-border);
+      backdrop-filter: blur(10px);
+      min-width: 0;
+      overflow: hidden;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
+
+    .dashboard-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    .dashboard-portfolio {
+      font-size: 0.86rem;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    .badge-location {
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--color-badge-bg);
+      border: 1px solid var(--color-badge-border);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      margin-left: 8px;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    /* KPI cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      box-shadow: var(--shadow-subtle);
+      border: 1px solid var(--color-border);
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+    [data-theme="dark"] .kpi-card:hover {
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+    .kpi-card--accent::before { background: var(--color-accent); }
+    .kpi-card--warn::before { background: #F59E0B; }
+    .kpi-card--danger::before { background: var(--color-danger); }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-muted);
+      margin-bottom: 8px;
+      transition: color 0.3s;
+    }
+
+    .kpi-value {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--color-navy);
+      margin-bottom: 4px;
+      transition: color 0.3s;
+    }
+
+    .kpi-meta {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 4px 8px;
+      transition: color 0.3s;
+    }
+
+    .kpi-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+    }
+    .kpi-change--down { color: var(--color-danger); }
+    .kpi-change-arrow { font-size: 0.9rem; }
+
+    /* Section labels */
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--color-muted);
+      margin-bottom: 14px;
+      margin-top: 28px;
+      transition: color 0.3s;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    /* Chart grid */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-subtle);
+      overflow: hidden;
+      min-width: 0;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .panel:hover {
+      border-color: rgba(148, 163, 184, 0.4);
+    }
+    [data-theme="dark"] .panel:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    .panel-subtitle {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    /* Charts */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+    }
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Table */
+    .table-wrapper {
+      margin-top: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--color-border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      background: var(--color-table-even);
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    thead {
+      background: var(--color-table-head);
+      transition: background 0.3s;
+    }
+
+    th, td {
+      padding: 8px 14px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    /* Column width hints for better spacing */
+    table col.col-property { width: 18%; }
+    table col.col-neighborhood { width: 14%; }
+    table col.col-narrow { width: 7%; }
+    table col.col-money { width: 13%; }
+    table col.col-noi { width: 10%; }
+    table col.col-status { width: 14%; }
+
+    th {
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-muted);
+      border-bottom: 1px solid var(--color-border);
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    tbody tr:nth-child(even) { background: var(--color-table-even); }
+    tbody tr:nth-child(odd) { background: var(--color-table-odd); }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover { background: rgba(212, 160, 23, 0.04); }
+    [data-theme="dark"] tbody tr:hover { background: rgba(255, 255, 255, 0.04); }
+
+    td {
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-navy-soft);
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    td.numeric, th.numeric {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+    .status-pill--ok {
+      background: rgba(22, 163, 74, 0.08);
+      color: #166534;
+    }
+    [data-theme="dark"] .status-pill--ok { color: #4ade80; background: rgba(22, 163, 74, 0.15); }
+    .status-pill--vacant {
+      background: rgba(234, 179, 8, 0.10);
+      color: #92400e;
+    }
+    [data-theme="dark"] .status-pill--vacant { color: #fbbf24; background: rgba(234, 179, 8, 0.15); }
+    .status-pill--risk {
+      background: rgba(220, 38, 38, 0.09);
+      color: #b91c1c;
+    }
+    [data-theme="dark"] .status-pill--risk { color: #f87171; background: rgba(239, 68, 68, 0.15); }
+
+    /* Action items */
+    .actions { margin-top: 16px; }
+
+    .actions-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--color-muted);
+      margin-bottom: 8px;
+      transition: color 0.3s;
+    }
+
+    .action-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .action-item {
+      font-size: 0.86rem;
+      color: var(--color-navy-soft);
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--color-action-bg);
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .action-item--red { border-left-color: var(--color-danger); }
+    .action-item--amber { border-left-color: #F59E0B; }
+
+    .action-item-note {
+      font-size: 0.78rem;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding: 32px 0 8px;
+      border-top: 1px solid var(--color-border);
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--color-muted);
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .footer-main {
+      font-weight: 500;
+      color: var(--color-navy-soft);
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+
+    .footer-sub {
+      font-size: 0.78rem;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 960px) {
+      .chart-grid { grid-template-columns: 1fr; }
+      .action-list { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 840px) {
+      .nav { flex-wrap: wrap; gap: 10px; }
+      .nav-actions { flex-wrap: wrap; }
+      .nav-outer { padding: 12px 16px; }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 16px 16px 32px; }
+      .hero-main-title {
+        font-size: 1.75rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+      .kpi-grid { grid-template-columns: 1fr; }
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .nav-actions { flex-wrap: wrap; gap: 10px; }
+      .dashboard-wrapper { padding: 18px 14px 20px; }
+      .dashboard-header { flex-direction: column; gap: 6px; }
+      .hero-footnote { word-wrap: break-word; overflow-wrap: break-word; }
+      table { font-size: 0.76rem; min-width: 600px; }
+      th, td { padding: 6px 8px; }
+      .action-item { flex-direction: column; align-items: flex-start; }
+      .chart-container { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV - Full width, outside page container -->
+  <div class="nav-outer">
+    <header class="nav">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true"></div>
+        <div>
+          <div class="brand-text-main">Door<span>ROI</span></div>
+          <div class="brand-sub">Property NOI Analytics</div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="#portfolio" class="nav-link">Portfolio</a>
+        <a href="#reports" class="nav-link">Owner Reports</a>
+        <a href="#about" class="nav-link">About</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+          <span class="theme-toggle-icon" id="themeIcon">&#9790;</span>
+          <span id="themeLabel">Dark</span>
+        </button>
+        <button class="btn-primary">
+          Request demo
+          <span>&rarr;</span>
+        </button>
+      </div>
+    </header>
+  </div>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-pill">
+        <span class="hero-pill-dot"></span>
+        Built for landlords
+      </div>
+      <h1 class="hero-main-title">
+        See the <span class="hero-highlight">ROI on every door</span>.
+      </h1>
+      <p class="hero-subtitle">
+        DoorROI turns QuickBooks or CSV exports into a clean NOI dashboard for each property,
+        so you know exactly which doors are paying you &mdash; and which ones aren&rsquo;t.
+      </p>
+      <button class="btn-primary">
+        Try with sample data
+        <span>&nearr;</span>
+      </button>
+      <a href="#" class="cta-secondary">Or <span>request a walkthrough</span></a>
+      <p class="hero-footnote">
+        No tenant portal. No leases. Just the financial visibility layer your spreadsheet can&rsquo;t give you.
+      </p>
+    </section>
+
+    <!-- DASHBOARD — Full Width -->
+    <div class="dashboard-wrapper" id="portfolio">
+      <div class="dashboard-header">
+        <div>
+          <div class="dashboard-title">Portfolio Overview</div>
+          <div class="dashboard-portfolio">
+            Sample Portfolio
+            <span class="badge-location">5 Properties &middot; 9 Units</span>
+          </div>
+        </div>
+        <div class="panel-subtitle" id="lastUpdated"></div>
+      </div>
+
+      <!-- KPI cards -->
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-card--accent">
+          <div class="kpi-label">Total Monthly NOI</div>
+          <div class="kpi-value">$4,199</div>
+          <div class="kpi-meta">
+            <span class="kpi-change kpi-change--down">
+              <span class="kpi-change-arrow">&darr;</span>
+              $71 vs last month
+            </span>
+            <span>After debt service &amp; expenses</span>
+          </div>
+        </article>
+        <article class="kpi-card kpi-card--warn">
+          <div class="kpi-label">Portfolio Occupancy</div>
+          <div class="kpi-value">77.8%</div>
+          <div class="kpi-meta">
+            <span>7 of 9 units occupied</span>
+            <span>Target: 92%+</span>
+          </div>
+        </article>
+        <article class="kpi-card kpi-card--accent">
+          <div class="kpi-label">Rent Collected (This Month)</div>
+          <div class="kpi-value">$8,050</div>
+          <div class="kpi-meta">
+            <span>of $10,850 potential</span>
+            <span class="kpi-change kpi-change--down">
+              <span class="kpi-change-arrow">!</span>
+              Includes delinquencies
+            </span>
+          </div>
+        </article>
+        <article class="kpi-card kpi-card--danger">
+          <div class="kpi-label">Vacancy Loss (Monthly)</div>
+          <div class="kpi-value">$2,500</div>
+          <div class="kpi-meta">
+            <span>2 units vacant</span>
+            <span class="kpi-change kpi-change--down">
+              <span class="kpi-change-arrow">&darr;</span>
+              Revenue lost
+            </span>
+          </div>
+        </article>
+      </div>
+
+      <!-- Charts Row 1: Financial Performance -->
+      <div class="section-label">Financial Performance</div>
+      <div class="chart-grid">
+        <div class="panel">
+          <div class="panel-title">NOI by Property</div>
+          <div class="chart-container"><canvas id="noiBarChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Expense Breakdown</div>
+          <div class="chart-container"><canvas id="expenseDonut"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2: Trends & Occupancy -->
+      <div class="section-label">Trends &amp; Occupancy</div>
+      <div class="chart-grid">
+        <div class="panel">
+          <div class="panel-title">12-Month NOI Trend</div>
+          <div class="chart-container"><canvas id="noiTrendChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Occupancy Rate by Property</div>
+          <div class="chart-container"><canvas id="occBarChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Property Table -->
+      <div class="section-label">Property Details</div>
+      <div class="panel" style="padding: 0; overflow: hidden;">
+        <div class="table-wrapper">
+          <table>
+            <colgroup>
+              <col class="col-property">
+              <col class="col-neighborhood">
+              <col class="col-narrow">
+              <col class="col-narrow">
+              <col class="col-money">
+              <col class="col-money">
+              <col class="col-noi">
+              <col class="col-status">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Neighborhood</th>
+                <th>Units</th>
+                <th>Occupancy</th>
+                <th class="numeric">Rent Collected</th>
+                <th class="numeric">Expenses</th>
+                <th class="numeric">NOI</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Spring Hill Duplex</td>
+                <td>Spring Hill</td>
+                <td>2</td>
+                <td>100%</td>
+                <td class="numeric">$2,500</td>
+                <td class="numeric">$768</td>
+                <td class="numeric" style="color: var(--color-accent); font-weight: 600;">$1,732</td>
+                <td><span class="status-pill status-pill--ok">Healthy</span></td>
+              </tr>
+              <tr>
+                <td>Midtown Craftsman</td>
+                <td>Midtown</td>
+                <td>1</td>
+                <td>100%</td>
+                <td class="numeric">$1,350</td>
+                <td class="numeric">$540</td>
+                <td class="numeric" style="color: var(--color-accent); font-weight: 600;">$810</td>
+                <td><span class="status-pill status-pill--ok">Healthy</span></td>
+              </tr>
+              <tr>
+                <td>West Mobile Fourplex</td>
+                <td>West Mobile</td>
+                <td>4</td>
+                <td>75%</td>
+                <td class="numeric">$3,300</td>
+                <td class="numeric">$1,424</td>
+                <td class="numeric" style="color: var(--color-accent); font-weight: 600;">$1,876</td>
+                <td><span class="status-pill status-pill--risk">Late Payment</span></td>
+              </tr>
+              <tr>
+                <td>Saraland Ranch</td>
+                <td>Saraland</td>
+                <td>1</td>
+                <td>100%</td>
+                <td class="numeric">$1,200</td>
+                <td class="numeric">$464</td>
+                <td class="numeric" style="color: var(--color-accent); font-weight: 600;">$736</td>
+                <td><span class="status-pill status-pill--ok">Healthy</span></td>
+              </tr>
+              <tr>
+                <td>Downtown LoDa Condo</td>
+                <td>Downtown LoDa</td>
+                <td>1</td>
+                <td>Vacant</td>
+                <td class="numeric">$0</td>
+                <td class="numeric">$655</td>
+                <td class="numeric" style="color: var(--color-danger); font-weight: 600;">-$655</td>
+                <td><span class="status-pill status-pill--vacant">Vacant 8 days</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Action Items -->
+      <div class="section-label">Action Items</div>
+      <ul class="action-list">
+        <li class="action-item action-item--amber">
+          <div>
+            <div>Downtown LoDa Condo</div>
+            <div class="action-item-note">Vacant 8 days. Estimated loss at 30 days: $1,400</div>
+          </div>
+          <button class="btn-primary btn-sm">List now</button>
+        </li>
+        <li class="action-item action-item--red">
+          <div>
+            <div>West Mobile Unit 3</div>
+            <div class="action-item-note">Vacant 31 days. Monthly loss: $1,100. Action needed.</div>
+          </div>
+          <button class="btn-primary btn-sm">Review pricing</button>
+        </li>
+        <li class="action-item action-item--amber">
+          <div>
+            <div>West Mobile Unit 2</div>
+            <div class="action-item-note">Jerome T. rent 12 days overdue. $1,100 outstanding.</div>
+          </div>
+          <button class="btn-primary btn-sm">Send reminder</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="about">
+      <div class="footer-main">DoorROI &mdash; Property Analytics for Landlords</div>
+      <div class="footer-sub">Built for owners and small property managers Anywhere you invest</div>
+    </footer>
+  </div>
+
+<script>
+// ── Dark Mode Toggle ──
+var toggle = document.getElementById('themeToggle');
+var icon = document.getElementById('themeIcon');
+var label = document.getElementById('themeLabel');
+var isDark = localStorage.getItem('doorROI-theme') === 'dark';
+var chartsReady = false;
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  icon.innerHTML = isDark ? '&#9728;' : '&#9790;';
+  label.textContent = isDark ? 'Light' : 'Dark';
+  localStorage.setItem('doorROI-theme', isDark ? 'dark' : 'light');
+  if (chartsReady) createCharts();
+}
+
+toggle.addEventListener('click', function() {
+  isDark = !isDark;
+  applyTheme();
+});
+
+// Apply theme immediately (before charts)
+document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+icon.innerHTML = isDark ? '&#9728;' : '&#9790;';
+label.textContent = isDark ? 'Light' : 'Dark';
+
+// Dynamic date
+var today = new Date();
+document.getElementById('lastUpdated').textContent = 'Last updated: ' + today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+// ── Helpers ──
+function fmt$(n) {
+  var neg = n < 0;
+  var s = '$' + Math.abs(n).toLocaleString('en-US');
+  return neg ? '-' + s : s;
+}
+
+function getChartColors() {
+  return {
+    grid: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    text: isDark ? '#9CA3AF' : '#6b7280',
+    accent: '#1D9E75',
+    danger: '#EF4444',
+    warn: '#F59E0B',
+    donutCenter: isDark ? '#fff' : '#111827',
+    donutLabel: isDark ? '#9CA3AF' : '#6b7280',
+  };
+}
+
+// ── Chart Setup ──
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+var charts = [];
+
+function createCharts() {
+  var c = getChartColors();
+
+  Chart.defaults.color = c.text;
+
+  // Destroy existing charts
+  charts.forEach(function(ch) { ch.destroy(); });
+  charts = [];
+
+  // ── NOI Bar Chart ──
+  charts.push(new Chart(document.getElementById('noiBarChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Spring Hill', 'Midtown', 'W. Mobile 4plex', 'Saraland', 'LoDa Condo'],
+      datasets: [{
+        data: [1732, 810, 1876, 736, -655],
+        backgroundColor: [c.accent, c.accent, c.accent, c.accent, c.danger],
+        borderRadius: 4,
+        barThickness: 16
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(ctx) { return fmt$(ctx.raw); } } }
+      },
+      scales: {
+        x: {
+          grid: { color: c.grid },
+          ticks: { callback: function(v) { return fmt$(v); }, font: { size: 10 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 10 } }
+        }
+      }
+    }
+  }));
+
+  // ── Expense Donut ──
+  charts.push(new Chart(document.getElementById('expenseDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Insurance', 'Property Tax', 'Maintenance', 'PM Fees', 'Utilities'],
+      datasets: [{
+        data: [880, 808, 1110, 668, 385],
+        backgroundColor: ['#3B82F6', '#8B5CF6', '#F59E0B', '#1D9E75', '#EC4899'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 8,
+            font: { size: 10 },
+            usePointStyle: true,
+            pointStyleWidth: 8
+          }
+        },
+        tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + fmt$(ctx.raw); } } }
+      }
+    },
+    plugins: [{
+      id: 'centerText',
+      beforeDraw: function(chart) {
+        var cx = (chart.chartArea.left + chart.chartArea.right) / 2;
+        var cy = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+        var ctx = chart.ctx;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = c.donutLabel;
+        ctx.font = "500 10px 'DM Sans', sans-serif";
+        ctx.fillText('Total', cx, cy - 10);
+        ctx.fillStyle = c.donutCenter;
+        ctx.font = "700 16px 'DM Sans', sans-serif";
+        ctx.fillText('$3,851', cx, cy + 8);
+        ctx.restore();
+      }
+    }]
+  }));
+
+  // ── NOI Trend Line ──
+  var trendData = [4820, 4750, 4680, 4920, 5100, 4890, 5210, 4980, 4650, 4430, 4270, 4199];
+  var monthNames = [];
+  var today = new Date();
+  for (var i = 11; i >= 0; i--) {
+    var d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    monthNames.push(d.toLocaleString('en-US', { month: 'short' }));
+  }
+
+  charts.push(new Chart(document.getElementById('noiTrendChart'), {
+    type: 'line',
+    data: {
+      labels: monthNames,
+      datasets: [{
+        data: trendData,
+        borderColor: c.accent,
+        backgroundColor: isDark ? 'rgba(29,158,117,0.15)' : 'rgba(29,158,117,0.1)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 2,
+        pointBackgroundColor: c.accent,
+        pointHoverRadius: 5,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(ctx) { return fmt$(ctx.raw); } } }
+      },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+        y: {
+          grid: { color: c.grid },
+          ticks: { callback: function(v) { return fmt$(v); }, font: { size: 9 } },
+          min: 3500
+        }
+      }
+    }
+  }));
+
+  // ── Occupancy Bar ──
+  var occValues = [100, 100, 75, 100, 0];
+  var occColors = occValues.map(function(v) {
+    return v >= 90 ? c.accent : v >= 70 ? c.warn : c.danger;
+  });
+
+  charts.push(new Chart(document.getElementById('occBarChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Spring Hill', 'Midtown', 'W. Mobile', 'Saraland', 'LoDa Condo'],
+      datasets: [{
+        data: occValues,
+        backgroundColor: occColors,
+        borderRadius: 4,
+        barThickness: 16
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(ctx) { return ctx.raw + '%'; } } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+        y: {
+          grid: { color: c.grid },
+          max: 100,
+          ticks: { callback: function(v) { return v + '%'; }, font: { size: 9 } }
+        }
+      }
+    }
+  }));
+}
+
+chartsReady = true;
+createCharts();
+</script>
+</body>
+</html>
