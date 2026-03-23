@@ -637,6 +637,171 @@
       transition: color 0.3s;
     }
 
+    /* Get Started Form */
+    .form-section {
+      margin-top: 48px;
+      padding: 48px 0;
+      border-top: 1px solid var(--color-border);
+      transition: border-color 0.3s;
+    }
+
+    .form-section {
+      text-align: center;
+    }
+
+    .form-section-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+      color: var(--color-gold);
+      margin-bottom: 8px;
+    }
+
+    .form-section-title {
+      font-family: "Playfair Display", serif;
+      font-size: 2rem;
+      color: var(--color-navy);
+      margin: 0 0 12px;
+      transition: color 0.3s;
+    }
+
+    .form-section-desc {
+      font-size: 0.92rem;
+      color: var(--color-muted);
+      max-width: 560px;
+      line-height: 1.6;
+      margin: 0 auto 28px;
+      transition: color 0.3s;
+    }
+
+    .form-section-inner {
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: left;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--color-navy-soft);
+      transition: color 0.3s;
+    }
+
+    .form-label .req {
+      color: var(--color-gold);
+      margin-left: 2px;
+    }
+
+    .form-input,
+    .form-select {
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--color-navy-soft);
+      background: var(--color-bg);
+      transition: border-color 0.2s, background 0.3s, color 0.3s;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-input::placeholder {
+      color: var(--color-muted);
+      opacity: 0.6;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--color-gold);
+      box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12);
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6.5 6.5 6.5-6.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      cursor: pointer;
+    }
+
+    .form-submit {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .form-trust {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px 20px;
+      margin-top: 18px;
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
+    .form-trust span::before {
+      content: "✓";
+      color: var(--color-accent);
+      font-weight: 700;
+      margin-right: 5px;
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 32px 16px;
+    }
+
+    .form-success-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+    }
+
+    .form-success h3 {
+      font-family: "Playfair Display", serif;
+      font-size: 1.4rem;
+      color: var(--color-navy);
+      margin: 0 0 8px;
+      transition: color 0.3s;
+    }
+
+    .form-success p {
+      font-size: 0.88rem;
+      color: var(--color-muted);
+      transition: color 0.3s;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -673,6 +838,9 @@
       th, td { padding: 6px 8px; }
       .action-item { flex-direction: column; align-items: flex-start; }
       .chart-container { height: 200px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-card { padding: 20px 16px; }
+      .form-section-title { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -695,10 +863,10 @@
           <span class="theme-toggle-icon" id="themeIcon">&#9790;</span>
           <span id="themeLabel">Dark</span>
         </button>
-        <button class="btn-primary">
+        <a href="#get-started" class="btn-primary" style="text-decoration:none;">
           Request demo
           <span>&rarr;</span>
-        </button>
+        </a>
       </div>
     </header>
   </div>
@@ -718,11 +886,10 @@
         DoorROI turns QuickBooks or CSV exports into a clean NOI dashboard for each property,
         so you know exactly which doors are paying you &mdash; and which ones aren&rsquo;t.
       </p>
-      <button class="btn-primary">
-        Try with sample data
-        <span>&nearr;</span>
-      </button>
-      <a href="#" class="cta-secondary">Or <span>request a walkthrough</span></a>
+      <a href="#get-started" class="btn-primary" style="text-decoration:none;">
+        Request Free Access
+        <span>&rarr;</span>
+      </a>
       <p class="hero-footnote">
         No tenant portal. No leases. Just the financial visibility layer your spreadsheet can&rsquo;t give you.
       </p>
@@ -921,6 +1088,109 @@
         </li>
       </ul>
     </div>
+
+    <!-- GET STARTED FORM -->
+    <section class="form-section" id="get-started">
+      <div class="form-section-label">Get Started</div>
+      <h2 class="form-section-title">Request free access</h2>
+      <p class="form-section-desc">
+        I’ll set up DoorROI with your actual property data personally — no commitment, no credit card.
+      </p>
+
+      <div class="form-section-inner">
+      <div class="form-card">
+        <form id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="fc9067bb-2fdf-4f6b-aa23-4fa6ab5db2e3">
+          <input type="hidden" name="subject" value="New DoorROI Access Request">
+          <input type="hidden" name="from_name" value="DoorROI Website">
+          <input type="checkbox" name="botcheck" style="display:none;">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name <span class="req">*</span></label>
+              <input type="text" name="first_name" class="form-input" placeholder="John" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name <span class="req">*</span></label>
+              <input type="text" name="last_name" class="form-input" placeholder="Smith" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label class="form-label">Business Email <span class="req">*</span></label>
+              <input type="email" name="email" class="form-input" placeholder="you@yourcompany.com" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label class="form-label">Company / Business Name <span class="req">*</span></label>
+              <input type="text" name="company" class="form-input" placeholder="Smith Property Management" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">City <span class="req">*</span></label>
+              <select name="city" class="form-select" required>
+                <option value="" disabled selected>Select city...</option>
+                <option value="Mobile, AL">Mobile, AL</option>
+                <option value="Saraland, AL">Saraland, AL</option>
+                <option value="Daphne, AL">Daphne, AL</option>
+                <option value="Fairhope, AL">Fairhope, AL</option>
+                <option value="Spanish Fort, AL">Spanish Fort, AL</option>
+                <option value="Gulf Shores, AL">Gulf Shores, AL</option>
+                <option value="Orange Beach, AL">Orange Beach, AL</option>
+                <option value="Baldwin County, AL">Baldwin County, AL</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Properties Managed <span class="req">*</span></label>
+              <select name="properties_managed" class="form-select" required>
+                <option value="" disabled selected>Select range...</option>
+                <option value="1-5 properties">1&ndash;5 properties</option>
+                <option value="6-15 properties">6&ndash;15 properties</option>
+                <option value="16-50 properties">16&ndash;50 properties</option>
+                <option value="51+ properties">51+ properties</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label class="form-label">How do you currently track finances?</label>
+              <select name="current_tracking" class="form-select">
+                <option value="" disabled selected>Select one...</option>
+                <option value="Excel or spreadsheets">Excel or spreadsheets</option>
+                <option value="QuickBooks only">QuickBooks only</option>
+                <option value="AppFolio / Buildium / other PM software">AppFolio / Buildium / other PM software</option>
+                <option value="Nothing formal yet">Nothing formal yet</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary form-submit" id="formSubmitBtn">
+            Request Free Access <span>&rarr;</span>
+          </button>
+        </form>
+
+        <div class="form-success" id="formSuccess">
+          <div class="form-success-icon">&#9989;</div>
+          <h3>Request received!</h3>
+          <p>I'll reach out within 24 hours to get your dashboard set up.</p>
+        </div>
+      </div>
+
+      <div class="form-trust">
+        <span>No credit card</span>
+        <span>No commitment</span>
+        <span>I set it up personally</span>
+        <span>Reply within 24 hours</span>
+      </div>
+      </div>
+    </section>
 
     <!-- FOOTER -->
     <footer class="footer" id="about">
@@ -1155,6 +1425,40 @@ function createCharts() {
 
 chartsReady = true;
 createCharts();
+
+// ── Web3Forms Submission ──
+var contactForm = document.getElementById('contactForm');
+var formSuccess = document.getElementById('formSuccess');
+var formSubmitBtn = document.getElementById('formSubmitBtn');
+
+contactForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  formSubmitBtn.disabled = true;
+  formSubmitBtn.innerHTML = 'Sending&hellip;';
+
+  var formData = new FormData(contactForm);
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    body: formData
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      contactForm.style.display = 'none';
+      formSuccess.style.display = 'block';
+    } else {
+      formSubmitBtn.disabled = false;
+      formSubmitBtn.innerHTML = 'Request Free Access <span>&rarr;</span>';
+      alert('Something went wrong. Please try again.');
+    }
+  })
+  .catch(function() {
+    formSubmitBtn.disabled = false;
+    formSubmitBtn.innerHTML = 'Request Free Access <span>&rarr;</span>';
+    alert('Network error. Please try again.');
+  });
+});
 </script>
 </body>
 </html>
