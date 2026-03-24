@@ -1,8 +1,7 @@
 /**
- * Cloudflare Worker that serves the built React SPA from static assets.
- * Uses the `--assets` flag in wrangler.toml to serve from /dist.
- * This worker handles SPA routing (returns index.html for non-asset routes)
- * and serves robots.txt + sitemap.xml correctly.
+ * Cloudflare Worker middleware for DoorROI.
+ * Static assets + SPA routing are handled by wrangler.toml [assets] config.
+ * This worker adds security headers and caching to all responses.
  */
 
 export default {
@@ -10,52 +9,26 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Security headers for all responses
-    const securityHeaders = {
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '1; mode=block',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    };
+    // Fetch the asset (static file or SPA fallback handled by Cloudflare)
+    const response = await env.ASSETS.fetch(request);
 
-    // Let Cloudflare's asset serving handle known static files
-    // This worker only runs for requests that don't match a static asset
+    // Clone response so we can modify headers
+    const newResponse = new Response(response.body, response);
 
-    // For SPA routing: return index.html for any path that isn't a file
-    // (Cloudflare's asset binding handles actual files like .js, .css, etc.)
-    try {
-      // Try to fetch the asset first
-      const assetResponse = await env.ASSETS.fetch(request);
-      if (assetResponse.status !== 404) {
-        const response = new Response(assetResponse.body, assetResponse);
-        Object.entries(securityHeaders).forEach(([key, value]) => {
-          response.headers.set(key, value);
-        });
+    // Security headers
+    newResponse.headers.set('X-Content-Type-Options', 'nosniff');
+    newResponse.headers.set('X-Frame-Options', 'DENY');
+    newResponse.headers.set('X-XSS-Protection', '1; mode=block');
+    newResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    newResponse.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
-        // Cache static assets
-        if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|ico)$/)) {
-          response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-        }
-
-        return response;
-      }
-    } catch (e) {
-      // Asset not found, fall through to SPA routing
+    // Cache hashed static assets for 1 year; HTML gets no-cache
+    if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|ico)$/)) {
+      newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (path.endsWith('.html') || path === '/') {
+      newResponse.headers.set('Cache-Control', 'no-cache');
     }
 
-    // SPA fallback: serve index.html for all unmatched routes
-    try {
-      const indexRequest = new Request(new URL('/', request.url), request);
-      const indexResponse = await env.ASSETS.fetch(indexRequest);
-      const response = new Response(indexResponse.body, indexResponse);
-      Object.entries(securityHeaders).forEach(([key, value]) => {
-        response.headers.set(key, value);
-      });
-      response.headers.set('Cache-Control', 'no-cache');
-      return response;
-    } catch (e) {
-      return new Response('Not Found', { status: 404, headers: securityHeaders });
-    }
+    return newResponse;
   },
 };

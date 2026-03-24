@@ -9,9 +9,13 @@ export default defineConfig({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          charts: ['chart.js', 'react-chartjs-2'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'vendor';
+          }
+          if (id.includes('node_modules/chart.js') || id.includes('node_modules/react-chartjs-2')) {
+            return 'charts';
+          }
         },
       },
     },
