@@ -1,7 +1,7 @@
 /**
  * Cloudflare Worker middleware for DoorROI.
- * Static assets + SPA routing are handled by wrangler.toml [assets] config.
- * This worker adds security headers and caching to all responses.
+ * Static assets are served by the [assets] binding in wrangler.toml.
+ * This worker adds security headers, caching, and SPA fallback routing.
  */
 
 export default {
@@ -9,26 +9,46 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Fetch the asset (static file or SPA fallback handled by Cloudflare)
-    const response = await env.ASSETS.fetch(request);
+    // Security headers applied to all responses
+    const securityHeaders = {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    };
 
-    // Clone response so we can modify headers
-    const newResponse = new Response(response.body, response);
+    try {
+      // Try to serve the requested asset
+      let response = await env.ASSETS.fetch(request);
 
-    // Security headers
-    newResponse.headers.set('X-Content-Type-Options', 'nosniff');
-    newResponse.headers.set('X-Frame-Options', 'DENY');
-    newResponse.headers.set('X-XSS-Protection', '1; mode=block');
-    newResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    newResponse.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+      // SPA fallback: if no asset found and it's not a file request, serve index.html
+      if (response.status === 404 && !path.includes('.')) {
+        const indexUrl = new URL('/', url.origin);
+        response = await env.ASSETS.fetch(new Request(indexUrl, request));
+      }
 
-    // Cache hashed static assets for 1 year; HTML gets no-cache
-    if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|ico)$/)) {
-      newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-    } else if (path.endsWith('.html') || path === '/') {
-      newResponse.headers.set('Cache-Control', 'no-cache');
+      // Clone so we can modify headers
+      const newResponse = new Response(response.body, response);
+
+      // Apply security headers
+      for (const [key, value] of Object.entries(securityHeaders)) {
+        newResponse.headers.set(key, value);
+      }
+
+      // Cache hashed static assets for 1 year; HTML gets no-cache
+      if (path.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|ico)$/)) {
+        newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      } else {
+        newResponse.headers.set('Cache-Control', 'no-cache');
+      }
+
+      return newResponse;
+    } catch (e) {
+      return new Response('Internal Server Error', {
+        status: 500,
+        headers: securityHeaders,
+      });
     }
-
-    return newResponse;
   },
 };
