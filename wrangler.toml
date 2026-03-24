@@ -1,0 +1,6 @@
+name = "door-roi-demo"
+main = "worker/index.js"
+compatibility_date = "2024-09-23"
+
+# Serve the Vite build output as static assets
+assets = { directory = "dist" }

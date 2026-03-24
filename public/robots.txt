@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://doorroi.com/sitemap.xml
+
+# Crawl-delay suggestion for polite bots
+Crawl-delay: 1
