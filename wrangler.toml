@@ -1,4 +1,4 @@
-name = "door-roi-demo"
+name = "door-roi"
 main = "worker/index.js"
 compatibility_date = "2025-09-23"
 
