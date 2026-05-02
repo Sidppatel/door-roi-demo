@@ -130,32 +130,33 @@ body { min-height: 100vh; }
 .brand { display: flex; align-items: center; gap: 10px; }
 
 .brand-icon {
-  width: 34px; height: 42px; border-radius: 8px;
-  border: 2px solid var(--color-gold);
-  position: relative;
-  box-shadow: inset 0 0 0 1px rgba(11, 18, 32, 0.15);
-  background: linear-gradient(145deg, #111827, #020617);
-}
-.brand-icon::before {
-  content: ""; position: absolute; width: 4px; height: 4px;
-  border-radius: 999px; background: var(--color-gold);
-  right: 6px; top: 50%; transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
 }
 
 .brand-text-main {
-  font-family: "Playfair Display", "Times New Roman", serif;
-  font-weight: 700; font-size: 1.4rem;
-  letter-spacing: 0.05em; text-transform: uppercase;
-  color: var(--color-navy); transition: color 0.3s;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+  color: var(--color-navy);
+  line-height: 1;
 }
-.brand-text-main span {
-  font-family: "DM Sans", system-ui, sans-serif;
-  font-weight: 600; letter-spacing: 0.08em;
-  font-size: 1.1rem; margin-left: 4px; color: var(--color-gold);
+
+.brand-text-main .roi-text {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  color: var(--color-gold);
+  margin-left: 2px;
 }
+
 .brand-sub {
-  font-size: 0.8rem; text-transform: uppercase;
-  letter-spacing: 0.16em; color: var(--color-muted); transition: color 0.3s;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #94a3b8;
+  margin-top: 2px;
 }
 
 .nav-actions { display: flex; align-items: center; gap: 12px; }

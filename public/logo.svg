@@ -1,0 +1,8 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rounded Door Shape -->
+  <rect x="40" y="30" width="120" height="140" rx="20" fill="#0B1220" />
+  <!-- Gold Border -->
+  <rect x="40" y="30" width="120" height="140" rx="20" stroke="#D4A017" stroke-width="10" />
+  <!-- Door Handle -->
+  <circle cx="130" cy="100" r="7" fill="#D4A017" />
+</svg>

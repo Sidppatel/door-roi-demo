@@ -8,10 +8,10 @@ export default function Navbar() {
     <div className="nav-outer">
       <header className="nav">
         <div className="brand">
-          <div className="brand-icon" aria-hidden="true" />
+          <img src="/logo.svg" alt="DoorROI Logo" className="brand-icon" />
           <div>
             <div className="brand-text-main">
-              Door<span>ROI</span>
+              DOOR <span className="roi-text">ROI</span>
             </div>
             <div className="brand-sub">Property Profit Analytics</div>
           </div>
