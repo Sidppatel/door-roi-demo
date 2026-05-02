@@ -1,38 +1,38 @@
 export const kpiData = [
   {
     label: 'Total Monthly NOI',
-    value: '$4,199',
+    value: '$7,099',
     accent: 'accent',
     meta: [
-      { type: 'change-down', text: '$71 vs last month' },
+      { type: 'change-up', text: '$284 vs last month' },
       { type: 'text', text: 'After debt service & expenses' },
     ],
   },
   {
     label: 'Portfolio Occupancy',
-    value: '77.8%',
-    accent: 'warn',
+    value: '100%',
+    accent: 'accent',
     meta: [
-      { type: 'text', text: '7 of 9 units occupied' },
-      { type: 'text', text: 'Target: 92%+' },
+      { type: 'text', text: '9 of 9 units occupied' },
+      { type: 'text', text: 'Industry target: 92%+' },
     ],
   },
   {
     label: 'Rent Collected (This Month)',
-    value: '$8,050',
-    accent: 'accent',
+    value: '$9,850',
+    accent: 'warn',
     meta: [
-      { type: 'text', text: 'of $10,850 potential' },
-      { type: 'change-alert', text: 'Includes delinquencies' },
+      { type: 'text', text: 'of $10,950 billed' },
+      { type: 'change-alert', text: '1 tenant 5 days late' },
     ],
   },
   {
-    label: 'Vacancy Loss (Monthly)',
-    value: '$2,500',
-    accent: 'danger',
+    label: 'NOI per Door',
+    value: '$789',
+    accent: 'accent',
     meta: [
-      { type: 'text', text: '2 units vacant' },
-      { type: 'change-down', text: 'Revenue lost' },
+      { type: 'text', text: 'Monthly, after expenses' },
+      { type: 'change-up', text: '4.2% vs Q4 2025' },
     ],
   },
 ];
@@ -59,17 +59,17 @@ export const properties = [
     expenses: '$540',
     noi: '$810',
     noiPositive: true,
-    status: 'Healthy',
-    statusType: 'ok',
+    status: 'Below market',
+    statusType: 'risk',
   },
   {
     name: 'West Mobile Fourplex',
     neighborhood: 'West Mobile',
     units: 4,
-    occupancy: '75%',
-    rent: '$3,300',
+    occupancy: '100%',
+    rent: '$4,400',
     expenses: '$1,424',
-    noi: '$1,876',
+    noi: '$2,976',
     noiPositive: true,
     status: 'Late Payment',
     statusType: 'risk',
@@ -90,51 +90,51 @@ export const properties = [
     name: 'Downtown LoDa Condo',
     neighborhood: 'Downtown LoDa',
     units: 1,
-    occupancy: 'Vacant',
-    rent: '$0',
+    occupancy: '100%',
+    rent: '$1,500',
     expenses: '$655',
-    noi: '-$655',
-    noiPositive: false,
-    status: 'Vacant 8 days',
-    statusType: 'vacant',
+    noi: '$845',
+    noiPositive: true,
+    status: 'Healthy',
+    statusType: 'ok',
   },
 ];
 
 export const actionItems = [
   {
-    property: 'Downtown LoDa Condo',
-    note: 'Vacant 8 days. Estimated loss at 30 days: $1,400',
-    severity: 'amber',
-    buttonText: 'List now',
-  },
-  {
-    property: 'West Mobile Unit 3',
-    note: 'Vacant 31 days. Monthly loss: $1,100. Action needed.',
-    severity: 'red',
-    buttonText: 'Review pricing',
-  },
-  {
     property: 'West Mobile Unit 2',
-    note: 'Jerome T. rent 12 days overdue. $1,100 outstanding.',
+    note: 'Tenant 5 days late on $1,100 rent. Auto-reminder hasn’t been sent.',
     severity: 'amber',
     buttonText: 'Send reminder',
+  },
+  {
+    property: 'West Mobile Fourplex Unit 4',
+    note: 'Lease ending in 28 days. Renewal terms not yet confirmed.',
+    severity: 'amber',
+    buttonText: 'Start renewal',
+  },
+  {
+    property: 'Midtown Craftsman',
+    note: 'Rent $150/mo below comparable market ($1,350 vs. $1,500). Plan increase at next renewal.',
+    severity: 'amber',
+    buttonText: 'Plan increase',
   },
 ];
 
 export const chartData = {
   noiBar: {
     labels: ['Spring Hill', 'Midtown', 'W. Mobile 4plex', 'Saraland', 'LoDa Condo'],
-    values: [1732, 810, 1876, 736, -655],
+    values: [1732, 810, 2976, 736, 845],
   },
   expenses: {
     labels: ['Insurance', 'Property Tax', 'Maintenance', 'PM Fees', 'Utilities'],
     values: [880, 808, 1110, 668, 385],
     total: '$3,851',
   },
-  noiTrend: [4820, 4750, 4680, 4920, 5100, 4890, 5210, 4980, 4650, 4430, 4270, 4199],
+  noiTrend: [5200, 5350, 5450, 5800, 6100, 5950, 6450, 6700, 6650, 6850, 6900, 7099],
   occupancy: {
     labels: ['Spring Hill', 'Midtown', 'W. Mobile', 'Saraland', 'LoDa Condo'],
-    values: [100, 100, 75, 100, 0],
+    values: [100, 100, 100, 100, 100],
   },
 };
 

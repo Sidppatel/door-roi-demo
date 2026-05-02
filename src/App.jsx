@@ -4,6 +4,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Dashboard from './components/Dashboard';
+import About from './components/About';
 import ContactForm from './components/ContactForm';
 import Footer from './components/Footer';
 
@@ -15,6 +16,7 @@ export default function App() {
         <div className="page">
           <Hero />
           <Dashboard />
+          <About />
           <ContactForm />
           <Footer />
         </div>

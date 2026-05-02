@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { cityOptions, propertiesManaged, trackingOptions } from '../data/portfolioData';
+import { propertiesManaged } from '../data/portfolioData';
 
 export default function ContactForm() {
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
@@ -33,9 +33,10 @@ export default function ContactForm() {
   return (
     <section className="form-section" id="get-started">
       <div className="form-section-label">Get Started</div>
-      <h2 className="form-section-title">Request free access</h2>
+      <h2 className="form-section-title">Request Free Access</h2>
       <p className="form-section-desc">
-        I&rsquo;ll set up DoorROI with your actual property data personally &mdash; no commitment, no credit card.
+        Tell me a little about your portfolio and I&rsquo;ll personally set up DoorROI
+        with your data within 48 hours. I&rsquo;ll ask about your stack and city in my reply.
       </p>
 
       <div className="form-section-inner">
@@ -62,44 +63,6 @@ export default function ContactForm() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">
-                    Last Name <span className="req">*</span>
-                  </label>
-                  <input type="text" name="last_name" className="form-input" placeholder="Smith" required />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group full-width">
-                  <label className="form-label">
-                    Business Email <span className="req">*</span>
-                  </label>
-                  <input type="email" name="email" className="form-input" placeholder="you@yourcompany.com" required />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group full-width">
-                  <label className="form-label">
-                    Company / Business Name <span className="req">*</span>
-                  </label>
-                  <input type="text" name="company" className="form-input" placeholder="Smith Property Management" required />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">
-                    City <span className="req">*</span>
-                  </label>
-                  <select name="city" className="form-select" required defaultValue="">
-                    <option value="" disabled>Select city...</option>
-                    {cityOptions.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">
                     Properties Managed <span className="req">*</span>
                   </label>
                   <select name="properties_managed" className="form-select" required defaultValue="">
@@ -113,13 +76,10 @@ export default function ContactForm() {
 
               <div className="form-row">
                 <div className="form-group full-width">
-                  <label className="form-label">How do you currently track finances?</label>
-                  <select name="current_tracking" className="form-select" defaultValue="">
-                    <option value="" disabled>Select one...</option>
-                    {trackingOptions.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
+                  <label className="form-label">
+                    Email <span className="req">*</span>
+                  </label>
+                  <input type="email" name="email" className="form-input" placeholder="you@yourcompany.com" required />
                 </div>
               </div>
 
@@ -134,7 +94,7 @@ export default function ContactForm() {
                 className="btn-primary form-submit"
                 disabled={status === 'sending'}
               >
-                {status === 'sending' ? 'Sending\u2026' : 'Request Free Access'}{' '}
+                {status === 'sending' ? 'Sending…' : 'Request Free Access'}{' '}
                 {status !== 'sending' && <span>&rarr;</span>}
               </button>
             </form>
@@ -142,7 +102,7 @@ export default function ContactForm() {
         </div>
 
         <div className="form-trust">
-          <span>No credit card </span>
+          <span>No credit card</span>
           <span>No commitment</span>
           <span>I set it up personally</span>
           <span>Reply within 24 hours</span>

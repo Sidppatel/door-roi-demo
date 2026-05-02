@@ -8,6 +8,14 @@ function KPICard({ label, value, accent, meta }) {
       <div className="kpi-value">{value}</div>
       <div className="kpi-meta">
         {meta.map((m, i) => {
+          if (m.type === 'change-up') {
+            return (
+              <span key={i} className="kpi-change kpi-change--up">
+                <span className="kpi-change-arrow">&uarr;</span>
+                {m.text}
+              </span>
+            );
+          }
           if (m.type === 'change-down') {
             return (
               <span key={i} className="kpi-change kpi-change--down">

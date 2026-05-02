@@ -13,12 +13,11 @@ export default function Navbar() {
             <div className="brand-text-main">
               Door<span>ROI</span>
             </div>
-            <div className="brand-sub">Property NOI Analytics</div>
+            <div className="brand-sub">Property Profit Analytics</div>
           </div>
         </div>
         <nav className="nav-actions" aria-label="Main navigation">
-          <a href="#portfolio" className="nav-link">Portfolio</a>
-          <a href="#reports" className="nav-link">Owner Reports</a>
+          <a href="#portfolio" className="nav-link">Demo</a>
           <a href="#about" className="nav-link">About</a>
           <button
             className="theme-toggle"
@@ -26,12 +25,12 @@ export default function Navbar() {
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           >
             <span className="theme-toggle-icon">
-              {isDark ? '\u2600' : '\u263E'}
+              {isDark ? '☀' : '☾'}
             </span>
             <span>{isDark ? 'Light' : 'Dark'}</span>
           </button>
           <a href="#get-started" className="btn-primary" style={{ textDecoration: 'none' }}>
-            Request demo <span>&rarr;</span>
+            Request Free Access <span>&rarr;</span>
           </a>
         </nav>
       </header>
